@@ -15,7 +15,6 @@ type VaultAdapterWithPath = {
 	path?: string;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Decorator metadata keeps route parameters aligned with controller signatures.
 interface TaskQueryParams {
 	status?: string;
 	priority?: string;

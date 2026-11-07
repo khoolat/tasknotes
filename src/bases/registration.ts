@@ -68,7 +68,7 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<bo
 				"tasknotesTaskList",
 				{
 					name: uiText(msg({ message: "TaskNotes Task List", context: "bases/registration: registerBasesTaskList.attemptRegistration name" })),
-					icon: "tasknotes-simple",
+					icon: "check-square",
 					factory: buildTaskListViewFactory(plugin),
 					options: () => [
 						{
@@ -118,7 +118,7 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<bo
 				"tasknotesKanban",
 				{
 					name: uiText(msg({ message: "TaskNotes Kanban", context: "bases/registration: registerBasesTaskList.attemptRegistration name" })),
-					icon: "tasknotes-simple",
+					icon: "columns-3",
 					factory: buildKanbanViewFactory(plugin),
 					options: () => [
 					{
@@ -231,7 +231,7 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<bo
 				"tasknotesCalendar",
 				{
 					name: uiText(msg({ message: "TaskNotes Calendar", context: "bases/registration: registerBasesTaskList.attemptRegistration name" })),
-					icon: "tasknotes-simple",
+					icon: "calendar",
 					factory: buildCalendarViewFactory(plugin),
 					options: (config) => buildCalendarViewOptions(plugin, config),
 				},
@@ -244,7 +244,7 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<bo
 				"tasknotesMiniCalendar",
 				{
 					name: uiText(msg({ message: "TaskNotes Mini Calendar", context: "bases/registration: registerBasesTaskList.attemptRegistration name" })),
-					icon: "tasknotes-simple",
+					icon: "calendar-days",
 					factory: buildMiniCalendarViewFactory(plugin),
 					options: () => buildMiniCalendarViewOptions(plugin),
 				},

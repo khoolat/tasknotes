@@ -11,14 +11,12 @@ import { unregisterBasesViews } from "../bases/registration";
 import {
 	initializeCoreServices,
 	registerRibbonIcons,
-	registerTaskNotesIcon,
 } from "./pluginBootstrap";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Bootstrap/PluginRuntime" });
 
 export async function initializePluginRuntime(plugin: TaskNotesPlugin): Promise<void> {
-	registerTaskNotesIcon();
 	await initializeCoreServices(plugin);
 
 	plugin.workspaceNavigationService = new WorkspaceNavigationService(plugin);

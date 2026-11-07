@@ -39,7 +39,7 @@ export class TaskNotesSettingTab extends PluginSettingTab {
 
 		// Set icon for settings sidebar (Obsidian 1.11.0+)
 		if (requireApiVersion("1.11.0")) {
-			this.icon = "tasknotes-simple";
+			this.icon = "check-square";
 		}
 
 		this.plugin.registerEvent(
