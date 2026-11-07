@@ -1,452 +1,347 @@
-/* ================================================
-   POMODORO STATS VIEW - BEM STRUCTURE
-   ================================================ */
-
-/* Pomodoro Stats View Container - Root Block */
+/* Pomodoro dashboard, scoped to this view and using the active Obsidian theme. */
 .tasknotes-plugin .pomodoro-stats-view {
-    padding: var(--tn-spacing-lg);
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: var(--tn-spacing-xl);
-    height: 100%;
-    overflow-y: auto;
+    --tn-pomodoro-history-text: #111111;
+    --tn-pomodoro-history-muted: #465363;
+    --tn-pomodoro-delete-background: #ffffff;
+    --tn-pomodoro-delete-icon: #686868;
+
+    width: min(1170px, calc(100% - 32px));
+    min-width: 210px;
+    margin: 0 auto;
+    padding: 16px 0 40px;
+    color: var(--text-normal);
+    font-family: var(--font-interface);
 }
 
-/* ================================================
-   STATS VIEW HEADER
-   ================================================ */
+.theme-dark .tasknotes-plugin .pomodoro-stats-view {
+    --tn-pomodoro-history-text: var(--text-normal);
+    --tn-pomodoro-history-muted: var(--text-muted);
+    --tn-pomodoro-delete-background: transparent;
+    --tn-pomodoro-delete-icon: var(--text-muted);
+}
 
-/* Stats Header Container */
 .tasknotes-plugin .pomodoro-stats-view__header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    border-bottom: 1px solid var(--tn-border-color);
-    padding-bottom: var(--tn-spacing-md);
+    gap: 12px;
+    min-height: 60px;
+    overflow: hidden;
 }
 
-.tasknotes-plugin .pomodoro-stats-view__title {
-    font-size: var(--tn-font-size-xl);
-    font-weight: var(--tn-font-weight-semibold);
-    color: var(--tn-text-normal);
-    margin: 0;
+.tasknotes-plugin .pomodoro-stats-view__period-tabs {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-width: 210px;
+    gap: 2px;
 }
 
-.tasknotes-plugin .pomodoro-stats-view__header .setting-item {
-    flex: 1 1 auto;
-    min-width: 0;
-    border: none;
-    padding: 0;
+.tasknotes-plugin button.pomodoro-stats-view__period-tab {
+    display: block;
+    height: 44px;
+    padding: 0 12px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+    transition: none;
+    animation: none;
+}
+
+.tasknotes-plugin button.pomodoro-stats-view__period-tab[aria-selected="true"] {
+    color: var(--text-normal);
+}
+
+.tasknotes-plugin button.pomodoro-stats-view__period-tab[aria-selected="false"]:hover {
+    color: color-mix(in srgb, var(--text-muted) 75%, var(--text-normal) 25%);
+}
+
+.tasknotes-plugin .pomodoro-stats-view__period-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: var(--tn-pomodoro-tab-width, 0px);
+    height: 2px;
+    background: var(--text-normal);
+    pointer-events: none;
+    transform: translateX(var(--tn-pomodoro-tab-x, 0px));
+}
+
+.tasknotes-plugin .pomodoro-stats-view__period-tabs--animated .pomodoro-stats-view__period-indicator {
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), width 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tasknotes-plugin .pomodoro-stats-view__period-tabs--animated .pomodoro-stats-view__period-indicator {
+        transition: none;
+    }
+}
+
+.tasknotes-plugin .pomodoro-stats-view__period-tab:focus-visible,
+.tasknotes-plugin .pomodoro-stats-view__refresh-button:focus-visible,
+.tasknotes-plugin .pomodoro-stats-view__session-delete-button:focus-visible {
+    outline: 2px solid var(--interactive-accent);
+    outline-offset: 2px;
 }
 
 .tasknotes-plugin .pomodoro-stats-view__header-actions {
-    display: inline-flex;
+    display: flex;
+    flex-shrink: 0;
     align-items: center;
-    gap: var(--tn-spacing-xs);
-    flex: 0 0 auto;
+    gap: 4px;
+    padding-top: 8px;
 }
 
-.tasknotes-plugin .pomodoro-stats-view__refresh-button {
-    background: transparent;
-    color: var(--tn-text-normal);
-    border: none;
-    box-shadow: none;
-    font-size: var(--tn-font-size-sm);
-    font-weight: var(--tn-font-weight-medium);
-}
-
-.tasknotes-plugin .pomodoro-stats-view__refresh-button:hover {
-    background: var(--tn-interactive-hover);
-}
-
-.tasknotes-plugin .pomodoro-stats-view__bases-help {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+.tasknotes-plugin button.pomodoro-stats-view__refresh-button {
     width: 28px;
     height: 28px;
-    padding: 0;
-    background: transparent;
+    padding: 5px;
     border: none;
+    border-radius: 4px;
+    background: transparent;
     box-shadow: none;
-    color: var(--tn-text-muted);
-    border-radius: var(--tn-radius-sm);
+    color: var(--text-muted);
 }
 
-.tasknotes-plugin .pomodoro-stats-view__bases-help:hover,
-.tasknotes-plugin .pomodoro-stats-view__bases-help:focus-visible {
-    background: var(--tn-interactive-hover);
-    color: var(--tn-text-normal);
+.tasknotes-plugin button.pomodoro-stats-view__refresh-button:hover {
+    background: var(--background-secondary);
 }
 
-.tasknotes-plugin .pomodoro-stats-view__bases-help svg {
+.tasknotes-plugin button.pomodoro-stats-view__refresh-button:active {
+    background: var(--background-secondary-alt);
+    transform: scale(0.92);
+}
+
+.tasknotes-plugin .pomodoro-stats-view__header-actions svg {
     width: 16px;
     height: 16px;
 }
 
-/* ================================================
-   STATS SECTIONS
-   ================================================ */
-
-/* Stats Section Container */
-.tasknotes-plugin .pomodoro-stats-view__section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tn-spacing-md);
-}
-
-.tasknotes-plugin .pomodoro-stats-view__section-title {
-    font-size: var(--tn-font-size-lg);
-    font-weight: var(--tn-font-weight-semibold);
-    color: var(--tn-text-normal);
-    margin: 0;
-    padding-bottom: var(--tn-spacing-xs);
-    border-bottom: 1px solid var(--tn-border-color);
-}
-
-/* ================================================
-   OVERVIEW GRID
-   ================================================ */
-
-/* Overview Grid Container - Like TickTick */
-.tasknotes-plugin .pomodoro-stats-view__overview-grid {
+.tasknotes-plugin .pomodoro-stats-view__metrics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--tn-spacing-lg);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    padding: 24px 0 40px;
 }
 
-/* Overview Card - Larger than regular stat cards */
-.tasknotes-plugin .pomodoro-stats-view__overview-card {
+.tasknotes-plugin .pomodoro-stats-view__metric-card {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    min-width: 0;
+    min-height: 140px;
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--background-secondary);
+}
+
+.tasknotes-plugin .pomodoro-stats-view__metric-header {
+    display: flex;
     align-items: flex-start;
-    padding: var(--tn-spacing-xl);
-    background: var(--tn-bg-secondary);
-    border-radius: var(--tn-radius-lg);
-    border: 1px solid var(--tn-border-color);
-    transition: background-color var(--tn-transition-fast), border-color var(--tn-transition-fast), box-shadow var(--tn-transition-fast), transform var(--tn-transition-fast);
-    min-height: 120px;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
 }
 
-.tasknotes-plugin .pomodoro-stats-view__overview-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--tn-shadow-medium);
+.tasknotes-plugin .pomodoro-stats-view__metric-icon {
+    flex: 0 0 24px;
+    color: var(--text-muted);
 }
 
-/* Overview Card Elements */
-.tasknotes-plugin .pomodoro-stats-view__overview-value {
-    font-size: 2.5rem;
-    font-weight: var(--tn-font-weight-bold);
-    color: var(--tn-interactive-accent);
-    margin-bottom: var(--tn-spacing-xs);
-    line-height: 1;
+.tasknotes-plugin .pomodoro-stats-view__metric-icon svg {
+    width: 24px;
+    height: 24px;
 }
 
-.tasknotes-plugin .pomodoro-stats-view__overview-label {
-    font-size: var(--tn-font-size-md);
-    color: var(--tn-text-normal);
-    font-weight: var(--tn-font-weight-semibold);
-    margin-bottom: var(--tn-spacing-xs);
-    line-height: 1.2;
+.tasknotes-plugin .pomodoro-stats-view__metric-value {
+    color: var(--text-normal);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    letter-spacing: -1px;
+    overflow-wrap: anywhere;
 }
 
-.tasknotes-plugin .pomodoro-stats-view__overview-change {
-    font-size: var(--tn-font-size-sm);
-    font-weight: var(--tn-font-weight-medium);
-    line-height: 1.2;
+.tasknotes-plugin .pomodoro-stats-view__history h2 {
+    margin: 0;
+    padding-bottom: 20px;
+    padding-left: 12px;
+    color: var(--text-normal);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 23px;
 }
 
-.tasknotes-plugin .pomodoro-stats-view__overview-change.positive {
-    color: var(--tn-status-done-color, #10B981);
-}
-
-.tasknotes-plugin .pomodoro-stats-view__overview-change.negative {
-    color: var(--tn-color-error);
-}
-
-/* ================================================
-   STATS GRID
-   ================================================ */
-
-/* Stats Grid Container */
-.tasknotes-plugin .pomodoro-stats-view__stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: var(--tn-spacing-md);
-}
-
-/* Individual Stat Card */
-.tasknotes-plugin .pomodoro-stats-view__stat-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: var(--tn-spacing-lg);
-    background: var(--tn-bg-secondary);
-    border-radius: var(--tn-radius-lg);
-    border: 1px solid var(--tn-border-color);
-    text-align: center;
-    transition: background-color var(--tn-transition-fast), border-color var(--tn-transition-fast), box-shadow var(--tn-transition-fast), transform var(--tn-transition-fast);
-}
-
-.tasknotes-plugin .pomodoro-stats-view__stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--tn-shadow-medium);
-}
-
-/* Stat Card Elements */
-.tasknotes-plugin .pomodoro-stats-view__stat-value {
-    font-size: 2rem;
-    font-weight: var(--tn-font-weight-bold);
-    color: var(--tn-interactive-accent);
-    margin-bottom: var(--tn-spacing-sm);
-    line-height: 1;
-}
-
-.tasknotes-plugin .pomodoro-stats-view__stat-label {
-    font-size: var(--tn-font-size-sm);
-    color: var(--tn-text-muted);
-    font-weight: var(--tn-font-weight-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    line-height: 1.2;
-}
-
-/* ================================================
-   RECENT SESSIONS
-   ================================================ */
-
-/* Recent Sessions Container */
 .tasknotes-plugin .pomodoro-stats-view__recent-sessions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tn-spacing-sm);
-    max-height: 400px;
-    overflow-y: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    overflow-x: auto;
 }
 
-/* No Sessions State */
-.tasknotes-plugin .pomodoro-stats-view__no-sessions {
-    padding: var(--tn-spacing-xl);
-    text-align: center;
-    color: var(--tn-text-muted);
-    font-style: italic;
-    background: var(--tn-bg-secondary);
-    border-radius: var(--tn-radius-md);
-    border: 1px solid var(--tn-border-color);
-}
-
-/* ================================================
-   SESSION ITEM
-   ================================================ */
-
-/* Session Item Container */
 .tasknotes-plugin .pomodoro-stats-view__session-item {
     display: grid;
-    grid-template-columns: auto auto auto 1fr auto;
-    gap: var(--tn-spacing-md);
+    grid-template-columns: 92px 80px max-content minmax(0, 1fr) 26px;
+    gap: 20px;
     align-items: center;
-    padding: var(--tn-spacing-md);
-    background: var(--tn-bg-secondary);
-    border-radius: var(--tn-radius-sm);
-    border: 1px solid var(--tn-border-color);
-    transition: background-color var(--tn-transition-fast);
+    min-height: 46px;
+    min-width: 420px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    font-family: Inter, var(--font-interface);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 15px;
 }
 
-.tasknotes-plugin .pomodoro-stats-view__session-item:hover {
-    background: var(--tn-interactive-hover);
-}
-
-/* Session Item Elements */
 .tasknotes-plugin .pomodoro-stats-view__session-date {
-    font-size: var(--tn-font-size-sm);
-    color: var(--tn-text-muted);
-    font-weight: var(--tn-font-weight-medium);
-    min-width: 100px;
-    font-family: var(--tn-font-mono);
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+    color: var(--tn-pomodoro-history-muted);
+    text-align: right;
+    white-space: nowrap;
 }
 
 .tasknotes-plugin .pomodoro-stats-view__session-duration {
-    font-size: var(--tn-font-size-sm);
-    color: var(--tn-text-normal);
-    font-weight: var(--tn-font-weight-semibold);
-    font-family: var(--tn-font-mono);
-    min-width: 60px;
+    grid-column: 2;
+    grid-row: 1;
+    color: var(--tn-pomodoro-history-text);
+    white-space: nowrap;
 }
 
-/* Session Status Badge */
 .tasknotes-plugin .pomodoro-stats-view__session-status {
-    font-size: var(--tn-font-size-xs);
-    font-weight: var(--tn-font-weight-semibold);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: var(--tn-spacing-xs) var(--tn-spacing-sm);
-    border-radius: var(--tn-radius-sm);
-    min-width: 80px;
-    text-align: center;
+    display: inline-flex;
+    grid-column: 3;
+    grid-row: 1;
+    align-items: center;
+    justify-content: center;
+    width: max-content;
+    height: 24px;
+    padding: 3px 8px;
+    color: var(--tn-pomodoro-history-text);
+    font-family: Inter, var(--font-interface);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
 }
 
 .tasknotes-plugin .pomodoro-stats-view__session-status--completed {
-    background: var(--tn-status-done-color, #10B981);
-    color: var(--tn-bg-primary);
+    min-width: 83px;
+    border-radius: 41px;
+    background: rgb(72 232 23 / 15%);
 }
 
 .tasknotes-plugin .pomodoro-stats-view__session-status--interrupted {
-    background: var(--tn-color-error);
-    color: var(--tn-bg-primary);
+    border-radius: 26px;
+    background: rgb(255 82 109 / 15%);
 }
 
-/* Session Task */
 .tasknotes-plugin .pomodoro-stats-view__session-task {
-    font-size: var(--tn-font-size-sm);
-    color: var(--tn-text-normal);
-    font-weight: var(--tn-font-weight-medium);
-    text-align: right;
+    grid-column: 4;
+    grid-row: 1;
+    min-width: 0;
     overflow: hidden;
+    color: var(--tn-pomodoro-history-muted);
+    text-align: right;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.tasknotes-plugin .pomodoro-stats-view__session-delete-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    color: var(--tn-text-muted);
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: var(--tn-radius-sm);
-    cursor: pointer;
+.tasknotes-plugin button.pomodoro-stats-view__session-delete-button {
+    grid-column: 5;
+    grid-row: 1;
+    width: 26px;
+    height: 26px;
+    padding: 5px;
+    border: 0;
+    border-radius: 4px;
+    background: var(--tn-pomodoro-delete-background);
+    box-shadow: none;
+    color: var(--tn-pomodoro-delete-icon);
 }
 
-.tasknotes-plugin .pomodoro-stats-view__session-delete-button:hover,
-.tasknotes-plugin .pomodoro-stats-view__session-delete-button:focus-visible {
-    color: var(--tn-color-error);
-    background: var(--tn-interactive-hover);
-    border-color: var(--tn-border-color);
+.tasknotes-plugin .pomodoro-stats-view__session-delete-button svg {
+    width: 16px;
+    height: 16px;
 }
 
-/* ================================================
-   RESPONSIVE DESIGN
-   ================================================ */
+.tasknotes-plugin .pomodoro-stats-view__session-delete-button:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-error);
+}
 
-@media (max-width: 768px) {
-    .tasknotes-plugin .pomodoro-stats-view {
-        padding: var(--tn-spacing-md);
-        gap: var(--tn-spacing-md);
+.tasknotes-plugin .pomodoro-stats-view__no-sessions {
+    display: grid;
+    min-height: 82px;
+    place-items: center;
+    border-bottom: 1px solid var(--background-modifier-border);
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* Respond to the Obsidian pane width, including split panes. */
+.workspace-leaf-content[data-type="tasknotes-pomodoro-stats-view"] .view-content {
+    container-type: inline-size;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+}
+
+@container (max-width: 960px) {
+    .tasknotes-plugin .pomodoro-stats-view__metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-    
+}
+
+@container (max-width: 660px) {
+    .tasknotes-plugin .pomodoro-stats-view {
+        width: calc(100% - 24px);
+    }
+
+}
+
+@container (max-width: 480px) {
+    .tasknotes-plugin .pomodoro-stats-view__metrics-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@container (max-width: 400px) {
     .tasknotes-plugin .pomodoro-stats-view__header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--tn-spacing-sm);
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__refresh-button {
-        align-self: flex-end;
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__overview-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__session-item {
-        grid-template-columns: 1fr;
-        gap: var(--tn-spacing-sm);
-        text-align: center;
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__session-date,
-    .tasknotes-plugin .pomodoro-stats-view__session-duration,
-    .tasknotes-plugin .pomodoro-stats-view__session-task {
-        min-width: auto;
-        text-align: center;
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__session-status {
-        justify-self: center;
+        flex-wrap: nowrap;
     }
 
-    .tasknotes-plugin .pomodoro-stats-view__session-delete-button {
-        justify-self: center;
+    .tasknotes-plugin .pomodoro-stats-view__period-tabs {
+        flex-basis: 210px;
     }
+
+    .tasknotes-plugin button.pomodoro-stats-view__period-tab {
+        flex: 1;
+        min-width: 0;
+        padding: 0 4px;
+        font-size: 13px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
 }
 
-@media (max-width: 480px) {
-    .tasknotes-plugin .pomodoro-stats-view {
-        padding: var(--tn-spacing-sm);
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__overview-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__overview-card {
-        padding: var(--tn-spacing-lg);
-        min-height: 100px;
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__overview-value {
-        font-size: 2rem;
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__stat-card {
-        padding: var(--tn-spacing-md);
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__stat-value {
-        font-size: 1.5rem;
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__session-item {
-        padding: var(--tn-spacing-sm);
-    }
-}
-
-/* ================================================
-   ACCESSIBILITY & REDUCED MOTION
-   ================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-    .tasknotes-plugin .pomodoro-stats-view__overview-card,
-    .tasknotes-plugin .pomodoro-stats-view__stat-card,
-    .tasknotes-plugin .pomodoro-stats-view__session-item,
-    .tasknotes-plugin .pomodoro-stats-view__refresh-button {
-        transition: none;
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__overview-card:hover,
-    .tasknotes-plugin .pomodoro-stats-view__stat-card:hover {
-        transform: none;
-    }
-}
-
-/* Focus indicators for keyboard navigation */
-.tasknotes-plugin .pomodoro-stats-view__refresh-button:focus {
-    outline: 2px solid var(--tn-interactive-accent);
-    outline-offset: 2px;
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-    .tasknotes-plugin .pomodoro-stats-view__overview-card,
-    .tasknotes-plugin .pomodoro-stats-view__stat-card,
-    .tasknotes-plugin .pomodoro-stats-view__session-item {
-        border-width: 2px;
-    }
-    
-    .tasknotes-plugin .pomodoro-stats-view__session-status {
-        border: 2px solid currentColor;
+@container (max-width: 274px) {
+    .tasknotes-plugin .pomodoro-stats-view__header-actions {
+        visibility: hidden;
     }
 }

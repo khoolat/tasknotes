@@ -16,6 +16,7 @@ Example:
 ```
 ## Fixed
 
+- Fixed low-contrast dates, durations, task names and status labels in dark Pomodoro history. Delete buttons now use theme-aware colors instead of white backgrounds in dark mode.
 - (#768) Fixed calendar view appearing empty in week and day views due to invalid time configuration values
   - Added time validation in settings UI with proper error messages and debouncing
   - Prevents "Cannot read properties of null (reading 'years')" error from FullCalendar
@@ -34,7 +35,17 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 
 ## Changed
 
-- The sidebar button for creating a task now uses the square-plus icon. TaskNotes view icons now match their sidebar buttons, and settings use a check-square icon.
+- Pomodoro period tabs now use a smoothly sliding underline while text changes immediately. Unselected tabs have a subtle text-only hover state; reduced-motion preferences disable the underline animation.
+- Pomodoro focus time now includes interrupted work sessions, and Tasks worked on counts unique tasks associated with sessions in the selected period. Completed sessions explicitly counts finished work sessions and shows No completed sessions when empty. The consecutive-day streak uses the full history regardless of the selected period.
+- The Pomodoro consecutive-days card now spells out the day unit using the interface language's plural forms instead of an abbreviation.
+- In very narrow Pomodoro statistics panes, period labels truncate on one line and the content stops shrinking at 210px. The refresh button stays to the right and clips rather than moving below the tabs.
+- Empty Pomodoro summary cards now show descriptive labels instead of zero values for focus time, sessions and consecutive days.
+- Pomodoro history aligns dates and durations in fixed 92px and 80px columns with 20px gaps. Session durations of an hour or longer now show hours and minutes.
+- Pomodoro history now retains and shows all associated tasks when switching tasks within one session, rather than showing only the last task. Long task lists can be read in the tooltip.
+- Pomodoro history uses 12px Inter text and translucent green (#48E817) and red (#FF526D) status pills at 15% opacity, with 24px height and 3px by 8px padding. Interrupted sessions are now labelled Cancelled.
+- Simplified the Pomodoro statistics toolbar: removed the migration help button and added a rotating refresh icon with flat hover and pressed states. History dates now show the day before the month, with compact Russian month names, and the heading aligns with the session rows.
+- Redesigned Pomodoro statistics with Today, Week and All time tabs, four summary cards and session history filtered by the selected period. The dashboard shows tasks worked on and consecutive days with completed Pomodoro sessions, and adapts to narrow panes, switching to one card per row at 480px or narrower. History rows stay on one line: long task names are shortened with an ellipsis, and very narrow panes scroll the history horizontally.
+- The sidebar button for creating a task now uses the square-plus icon. TaskNotes view icons now match their sidebar buttons, the task list uses a list icon, and settings use a check-square icon.
 - Reworked the task create and edit modals. Status, priority, dates, recurrence and reminders are now labelled chips that show their current value, replacing the icons with a dot. The edit modal starts with the title, **Task information** is collapsed, and **Archive** and **Delete** moved into a **More actions** (⋯) menu beside **Open note**. Empty field rows are more compact.
 - Natural language input now updates the form as you type, so the **Fill form** button and the preview under the input were removed. Removing text from the input undoes what it set, and a field you changed by hand is no longer overwritten. See [Task Management](https://tasknotes.dev/features/task-management/).
 - Closing the create modal with an unsaved draft now asks whether to save or discard it, as the edit modal does. **Open note** and **Archive** in the edit modal now ask before leaving unsaved changes, rather than afterwards.

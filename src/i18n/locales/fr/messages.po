@@ -325,20 +325,10 @@ msgctxt "contextMenus.task.dependencies.notices.blockingAdded"
 msgid "{count} dependent task added"
 msgstr "Tâches dépendantes ajoutées : {count}"
 
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.overviewCards.todayPomos.change.less"
-msgid "{count} fewer than yesterday"
-msgstr "{count} de moins qu''hier"
-
 #: src/i18n/messages.ts
 msgctxt "services.notification.missed.summaryTitle"
 msgid "{count} missed TaskNotes reminders"
 msgstr "Rappels TaskNotes manqués : {count}"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.overviewCards.todayPomos.change.more"
-msgid "{count} more than yesterday"
-msgstr "{count} de plus qu''hier"
 
 #: src/bases/CalendarView.ts
 msgctxt "views.basesCalendar.buttonText.customDays"
@@ -399,16 +389,6 @@ msgstr "{displayName} : "
 msgctxt "modals/TaskSelectorWithCreateModal: TaskSelectorWithCreateModal.buildMetadataParts text"
 msgid "{displayName}: {displayValue}"
 msgstr "{displayName} : {displayValue}"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.overviewCards.todayFocus.change.less"
-msgid "{duration} less than yesterday"
-msgstr "{duration} de moins qu''hier"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.overviewCards.todayFocus.change.more"
-msgid "{duration} more than yesterday"
-msgstr "{duration} de plus qu''hier"
 
 #: src/utils/safeAsync.ts
 msgctxt "utils/safeAsync: SafeAsync.executeWithRetry display"
@@ -599,11 +579,6 @@ msgstr "{minutes, number} min"
 msgctxt "settings.integrations.timeFormats.minutesAgo"
 msgid "{minutes, plural, one {{minutes, number} minute ago} other {{minutes, number} minutes ago}}"
 msgstr "{minutes, plural, one {il y a {minutes, number} minute} other {il y a {minutes, number} minutes}}"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.recents.duration"
-msgid "{minutes} min"
-msgstr "{minutes} min"
 
 #: src/modals/TimeEntryEditorModal.ts
 msgctxt "modals.timeEntryEditor.totalMinutes"
@@ -2218,11 +2193,6 @@ msgctxt "modals.icsNoteCreation.variables"
 msgid "Available template variables"
 msgstr "Variables de modèle disponibles"
 
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.stats.average"
-msgid "Avg length"
-msgstr "Durée moy."
-
 #: src/views/StatsView.ts
 msgctxt "views.stats.project.average"
 msgid "Avg per task"
@@ -2632,6 +2602,11 @@ msgstr "Annuler"
 msgctxt "settings.modalFields.reset.cancelText"
 msgid "Cancel"
 msgstr "Annuler"
+
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.recents.status.interrupted"
+msgid "Cancelled"
+msgstr "Annulée"
 
 #: src/i18n/messages.ts
 msgctxt "views.taskList.movement.parentCycle"
@@ -3196,6 +3171,11 @@ msgctxt "views.stats.filters.completedOnly"
 msgid "Completed only"
 msgstr "Terminées uniquement"
 
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.metrics.sessions"
+msgid "Completed sessions"
+msgstr "Sessions terminées"
+
 #: src/views/PomodoroView.ts
 msgctxt "views.pomodoro.statsLabel"
 msgid "completed today"
@@ -3225,11 +3205,6 @@ msgstr "Terminé : Quand coché, les tâches avec ce statut sont considérées c
 msgctxt "generated Bases column name"
 msgid "Completion"
 msgstr "Achèvement"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.stats.completion"
-msgid "Completion"
-msgstr "Taux d''achèvement"
 
 #: src/components/RecurrenceContextMenu.ts
 msgctxt "components.recurrenceContextMenu.customRecurrenceModal.completionDate"
@@ -4351,6 +4326,11 @@ msgstr "Vue journalière"
 msgctxt "settings.defaults.reminders.units.days"
 msgid "days"
 msgstr "jours"
+
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.metrics.days"
+msgid "Days in a row"
+msgstr "Jours consécutifs"
 
 #: src/components/RecurrenceContextMenu.ts
 msgctxt "components.recurrenceContextMenu.customRecurrenceModal.daysOfWeek"
@@ -6678,6 +6658,11 @@ msgctxt "generated Bases column name"
 msgid "Focus time"
 msgstr "Temps de concentration"
 
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.metrics.focus"
+msgid "Focus time"
+msgstr "Temps de concentration"
+
 #: src/modals/ICSNoteCreationModal.ts
 msgctxt "modals.icsNoteCreation.folderLabel"
 msgid "Folder"
@@ -7021,6 +7006,11 @@ msgctxt "settings.appearance.calendarView.showTodayHighlight.description"
 msgid "Highlight the current day in calendar views"
 msgstr "Surligner le jour actuel dans les vues calendrier"
 
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.history"
+msgid "History"
+msgstr "Historique"
+
 #: src/modals/ReminderModal.ts
 #: src/settings/tabs/taskProperties/remindersPropertyCard.ts
 msgctxt "settings.defaults.reminders.units.hours"
@@ -7264,11 +7254,6 @@ msgstr "Langue de l''interface"
 
 #: src/templates/defaultBasesFiles.ts
 msgctxt "generated Bases column name"
-msgid "Interrupted"
-msgstr "Interrompue"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.recents.status.interrupted"
 msgid "Interrupted"
 msgstr "Interrompue"
 
@@ -7956,7 +7941,6 @@ msgid "minutes"
 msgstr "minutes"
 
 #: src/modals/ReminderModal.ts
-#: src/views/PomodoroStatsView.ts
 msgctxt "views.pomodoroStats.stats.minutes"
 msgid "Minutes"
 msgstr "Minutes totales"
@@ -8411,6 +8395,11 @@ msgctxt "services.instantTaskConvert.notices.noCheckboxTasks"
 msgid "No checkbox tasks found in the current note."
 msgstr "Aucune tâche à cocher trouvée dans la note actuelle."
 
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.empty.sessions"
+msgid "No completed sessions"
+msgstr "Aucune session terminée"
+
 #: src/components/TaskContextMenu.ts
 msgctxt "contextMenus.task.completion.noCompletedStatus"
 msgid "No completed status configured"
@@ -8635,9 +8624,19 @@ msgid "No scheduled date on this task"
 msgstr "Cette tâche n''a pas de date planifiée"
 
 #: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.empty.focus"
+msgid "No sessions"
+msgstr "Aucune session"
+
+#: src/views/PomodoroStatsView.ts
 msgctxt "views.pomodoroStats.recents.empty"
 msgid "No sessions recorded yet"
 msgstr "Aucune session enregistrée pour le moment"
+
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.empty.days"
+msgid "No streak"
+msgstr "Aucune série"
 
 #: src/ui/taskCardRelationshipExpansion.ts
 msgctxt "contextMenus.task.subtasks.noSubtasks"
@@ -8670,6 +8669,7 @@ msgid "No tasknotes tasks found for this base."
 msgstr "Aucune tâche TaskNotes trouvée pour cette base."
 
 #: src/bases/KanbanView.ts
+#: src/views/PomodoroStatsView.ts
 msgctxt "views.kanban.noTasks"
 msgid "No tasks"
 msgstr "Aucune tâche"
@@ -9415,11 +9415,6 @@ msgctxt "generated Bases grouping label"
 msgid "Overdue/Past"
 msgstr "En retard / passée"
 
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.sections.overview"
-msgid "Overview"
-msgstr "Aperçu"
-
 #: src/views/StatsView.ts
 msgctxt "views.stats.sections.overview"
 msgid "Overview"
@@ -9643,11 +9638,6 @@ msgctxt "cli/commands/pomodoroCommand: defaults description"
 msgid "Pomodoro action to perform (default: status)"
 msgstr "Action Pomodoro à effectuer (par défaut : status)"
 
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.basesMigration.description"
-msgid "Pomodoro base views use daily notes frontmatter; to see this history in the generated Pomodoro statistics base, migrate Pomodoro data in settings, then set storage to daily notes."
-msgstr "Les vues Bases Pomodoro utilisent l''en-tête YAML des notes quotidiennes. Pour voir cet historique dans le fichier Bases de statistiques Pomodoro généré, migrez les données Pomodoro dans les paramètres, puis choisissez les notes quotidiennes comme emplacement de stockage."
-
 #: src/i18n/messages.ts
 msgctxt "settings.integrations.webhooks.events.pomodoroCompleted.label"
 msgid "Pomodoro completed"
@@ -9749,11 +9739,6 @@ msgstr "Minuteur Pomodoro"
 
 #: src/settings/tabs/taskPropertiesTab.ts
 msgctxt "settings.taskProperties.properties.pomodoros.name"
-msgid "Pomodoros"
-msgstr "Pomodoros"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.stats.pomodoros"
 msgid "Pomodoros"
 msgstr "Pomodoros"
 
@@ -10020,11 +10005,6 @@ msgstr "Prêt pour le prochain Pomodoro ?"
 msgctxt "views.pomodoro.status.ready"
 msgid "Ready to start"
 msgstr "Prêt à démarrer"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.sections.recent"
-msgid "Recent sessions"
-msgstr "Sessions récentes"
 
 #: src/settings/tabs/taskPropertiesTab.ts
 msgctxt "settings.taskProperties.properties.timeEntries.description"
@@ -11644,11 +11624,6 @@ msgctxt "settings.integrations.oauth.stored"
 msgid "Stored securely - enter a new value to replace"
 msgstr "Stocké en sécurité : saisissez une nouvelle valeur pour le remplacer"
 
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.stats.streak"
-msgid "Streak"
-msgstr "Série"
-
 #: src/settings/tabs/appearanceTab.ts
 msgctxt "settings.appearance.uiElements.showCompletedTaskStrikethrough.name"
 msgid "Strike through completed task titles"
@@ -12452,6 +12427,11 @@ msgctxt "notices.interface.postponed"
 msgid "Tasks postponed: {count}. Failed: {failed}."
 msgstr "Tâches reportées : {count}. Échecs : {failed}."
 
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.metrics.tasks"
+msgid "Tasks worked on"
+msgstr "Tâches travaillées"
+
 #: src/settings/tabs/integrationsTab.ts
 msgctxt "settings.integrations.calendarSubscriptions.customTemplate.description"
 msgid "Template for custom ICS event filenames"
@@ -12631,11 +12611,6 @@ msgstr "cette liste non groupée"
 
 #: src/templates/defaultBasesFiles.ts
 msgctxt "generated Bases grouping label"
-msgid "This week"
-msgstr "Cette semaine"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.sections.week"
 msgid "This week"
 msgstr "Cette semaine"
 
@@ -13148,16 +13123,6 @@ msgctxt "views.basesCalendar.settings.layout.todayColumnWidthMultiplier"
 msgid "Today column width (×)"
 msgstr "Largeur de la colonne du jour (×)"
 
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.overviewCards.todayFocus.label"
-msgid "Today''s focus"
-msgstr "Temps de concentration du jour"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.overviewCards.todayPomos.label"
-msgid "Today''s pomos"
-msgstr "Pomodoros du jour"
-
 #: src/bases/KanbanView.ts
 msgctxt "views.kanban.toggleColumn"
 msgid "Toggle {column} column"
@@ -13225,16 +13190,6 @@ msgstr "Demain"
 msgctxt "settings.appearance.uiElements.relationshipsPosition.options.top"
 msgid "Top of note"
 msgstr "Haut de la note"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.overviewCards.totalFocus.label"
-msgid "Total focus duration"
-msgstr "Temps de concentration total"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.overviewCards.totalPomos.label"
-msgid "Total pomos"
-msgstr "Total des pomodoros"
 
 #: src/views/StatsView.ts
 msgctxt "views.stats.cards.totalTasks"
@@ -13898,11 +13853,6 @@ msgctxt "modals.deviceCode.waitingForAuthorization"
 msgid "Waiting for authorization..."
 msgstr "En attente d''autorisation..."
 
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.basesMigration.title"
-msgid "Want a base view?"
-msgstr "Vous souhaitez une vue Bases ?"
-
 #: src/views/ReleaseNotesView.ts
 msgctxt "views.releaseNotes.starMessage"
 msgid "We really appreciate all feedback. If something does not feel right, please let us know on GitHub. If you find TaskNotes useful, please consider giving it a star."
@@ -13989,6 +13939,11 @@ msgstr "Mercredi"
 msgctxt "components.recurrenceContextMenu.customRecurrenceModal.weekdays.wednesday"
 msgid "Wednesday"
 msgstr "Mercredi"
+
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.period.week"
+msgid "Week"
+msgstr "Semaine"
 
 #: src/i18n/messages.ts
 msgctxt "views.basesCalendar.settings.layout.weekStartsOn"

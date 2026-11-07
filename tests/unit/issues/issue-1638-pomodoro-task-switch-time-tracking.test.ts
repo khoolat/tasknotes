@@ -59,6 +59,22 @@ function createMockPlugin(tasks: TaskInfo[]) {
 }
 
 describe("Issue #1638: Pomodoro task switching updates time tracking", () => {
+	it("retains all selected tasks when saving a multi-task session to history", async () => {
+		const first = createTask("Tasks/first.md", "First");
+		const second = createTask("Tasks/second.md", "Second");
+		const plugin = createMockPlugin([first, second]);
+		const service = new PomodoroService(plugin as unknown as PomodoroPlugin);
+		const save = jest.spyOn(service, "saveSessionHistory").mockResolvedValue(undefined);
+		await service.startPomodoro(first);
+		await service.assignTaskToCurrentSession(second);
+		await service.assignTaskToCurrentSession(first);
+		const current = service.getState().currentSession;
+		expect(current?.taskPaths).toEqual([first.path, second.path]);
+		if (!current) throw new Error("Expected an active session");
+		await service.addSessionToHistory({ ...current, endTime: new Date().toISOString(), completed: true });
+		expect(save).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({ taskPath: first.path, taskPaths: [first.path, second.path] })]));
+		service.cleanup();
+	});
 	it("stops the previous task and starts the new task while a work session is running", async () => {
 		const task1 = createTask("Tasks/task-1.md", "Task 1");
 		const task2 = createTask("Tasks/task-2.md", "Task 2");
@@ -101,6 +117,7 @@ describe("Issue #1638: Pomodoro task switching updates time tracking", () => {
 		expect(plugin.taskService.stopTimeTracking).toHaveBeenCalledTimes(1);
 		expect(plugin.taskService.stopTimeTracking).toHaveBeenCalledWith(task, undefined, "owned-start");
 		expect(service.getState().currentSession?.taskPath).toBeUndefined();
+		expect(service.getState().currentSession?.taskPaths).toEqual([task.path]);
 	});
 
 	it("does not start new time tracking while assigning a task to a paused Pomodoro", async () => {

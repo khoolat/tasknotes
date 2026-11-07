@@ -1,5 +1,6 @@
 import {
 	calculatePomodoroStats,
+	getPomodoroSessionTaskPaths,
 	filterPomodoroSessionsByDate,
 	filterPomodoroSessionsByDateRange,
 	getPomodoroSessionDateKey,
@@ -33,6 +34,11 @@ function session(overrides: Partial<PomodoroSessionHistory>): PomodoroSessionHis
 }
 
 describe("pomodoroStats", () => {
+	it("preserves task selection order, deduplicates repeated tasks and reads legacy sessions", () => {
+		expect(getPomodoroSessionTaskPaths({ taskPath: "Tasks/legacy.md" })).toEqual(["Tasks/legacy.md"]);
+		expect(getPomodoroSessionTaskPaths({ taskPaths: ["Tasks/a.md", "Tasks/b.md", "Tasks/a.md"], taskPath: "Tasks/c.md" })).toEqual(["Tasks/a.md", "Tasks/b.md", "Tasks/c.md"]);
+		expect(getPomodoroSessionTaskPaths({})).toEqual([]);
+	});
 	it("calculates work-session stats from sorted history without view/service duplication", () => {
 		const sessions = [
 			session({

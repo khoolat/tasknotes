@@ -38,6 +38,7 @@ import {
 	filterPomodoroSessionsByDateRange,
 	getPomodoroDateKeysInRange,
 	getPomodoroSessionDateKey,
+	getPomodoroSessionTaskPaths,
 	sortPomodoroSessions,
 } from "../utils/pomodoroStats";
 import { shouldPersistLastSelectedTask, shouldPersistPomodoroState } from "./pomodoroPersistence";
@@ -128,6 +129,10 @@ export class PomodoroService {
 
 		if (this.state.currentSession?.taskPath === oldPath) {
 			this.state.currentSession.taskPath = newPath;
+			stateChanged = true;
+		}
+		if (this.state.currentSession?.taskPaths?.includes(oldPath)) {
+			this.state.currentSession.taskPaths = [...new Set(this.state.currentSession.taskPaths.map((path) => path === oldPath ? newPath : path))];
 			stateChanged = true;
 		}
 
@@ -1208,6 +1213,9 @@ export class PomodoroService {
 		}
 
 		// Update the current session's task
+		const taskPaths = getPomodoroSessionTaskPaths(session);
+		if (nextTaskPath && !taskPaths.includes(nextTaskPath)) taskPaths.push(nextTaskPath);
+		if (taskPaths.length > 1 || (taskPaths.length && !nextTaskPath)) session.taskPaths = taskPaths;
 		if (previousTaskPath !== nextTaskPath) session.timeTrackingStartTime = undefined;
 		session.taskPath = nextTaskPath;
 
@@ -1399,6 +1407,7 @@ export class PomodoroService {
 			plannedDuration: session.plannedDuration,
 			type: session.type,
 			taskPath: session.taskPath,
+			...(session.taskPaths?.length ? { taskPaths: [...session.taskPaths] } : {}),
 			completed: session.completed && !session.interrupted,
 			activePeriods: session.activePeriods.slice(), // Copy the active periods array
 		};

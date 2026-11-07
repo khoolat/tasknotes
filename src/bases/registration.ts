@@ -68,7 +68,7 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<bo
 				"tasknotesTaskList",
 				{
 					name: uiText(msg({ message: "TaskNotes Task List", context: "bases/registration: registerBasesTaskList.attemptRegistration name" })),
-					icon: "check-square",
+					icon: "list",
 					factory: buildTaskListViewFactory(plugin),
 					options: () => [
 						{

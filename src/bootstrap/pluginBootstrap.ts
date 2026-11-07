@@ -189,7 +189,7 @@ export function registerRibbonIcons(plugin: TaskNotesPlugin): void {
 		await plugin.openBasesFileForCommand("open-advanced-calendar-view");
 	});
 
-	addRibbon("check-square", msg({ message: "Open tasks view", context: "commands.openTasksView" }), async () => {
+	addRibbon("list", msg({ message: "Open tasks view", context: "commands.openTasksView" }), async () => {
 		await plugin.openBasesFileForCommand("open-tasks-view");
 	});
 

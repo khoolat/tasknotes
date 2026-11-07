@@ -636,6 +636,7 @@ export interface PomodoroSession {
 	timeTrackingStartTime?: string;
 	id: string;
 	taskPath?: string; // optional, can run timer without task
+	taskPaths?: string[]; // Tasks associated with this session, in selection order.
 	startTime: string; // ISO datetime when session was first created
 	endTime?: string; // ISO datetime when session completed/interrupted
 	plannedDuration: number; // planned duration in minutes
@@ -659,6 +660,7 @@ export interface PomodoroSessionHistory {
 	plannedDuration: number; // originally planned duration in minutes
 	type: "work" | "short-break" | "long-break";
 	taskPath?: string; // optional task association
+	taskPaths?: string[]; // All tasks associated with a session that switched tasks.
 	completed: boolean; // true if session finished normally, false if interrupted
 	activePeriods: PomodoroTimePeriod[]; // Array of active timing periods (excludes pauses)
 }

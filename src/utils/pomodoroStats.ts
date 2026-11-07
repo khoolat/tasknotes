@@ -2,6 +2,11 @@ import { PomodoroHistoryStats, PomodoroSessionHistory } from "../types";
 import { formatDateForStorage } from "./dateUtils";
 import { getSessionDuration } from "./pomodoroUtils";
 
+export function getPomodoroSessionTaskPaths(session: { taskPath?: string; taskPaths?: string[] }): string[] {
+	return [...new Set([...(session.taskPaths ?? []), session.taskPath]
+		.filter((path): path is string => typeof path === "string" && path.length > 0))];
+}
+
 export function sortPomodoroSessions(
 	sessions: PomodoroSessionHistory[]
 ): PomodoroSessionHistory[] {
