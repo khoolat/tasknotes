@@ -69,6 +69,8 @@ export class PomodoroView extends ItemView {
 
 	// UI elements
 	private isSwitchingSession = false;
+	private sessionTabsEl: HTMLElement | null = null;
+	private sessionIndicatorInitialized = false;
 	private sessionButtons = new Map<PomodoroSession["type"], HTMLButtonElement>();
 	private timerDisplay: HTMLElement | null = null;
 	private timerInput: HTMLInputElement | null = null;
@@ -321,6 +323,8 @@ export class PomodoroView extends ItemView {
 		this.statElements = { pomodoros: null };
 
 		this.contentEl.empty();
+		this.sessionTabsEl = null;
+		this.sessionIndicatorInitialized = false;
 	}
 
 	async render() {
@@ -328,6 +332,9 @@ export class PomodoroView extends ItemView {
 		this.sessionButtons.clear();
 		addIcon("tasknotes-long-break", '<circle cx="50" cy="15" r="6" fill="currentColor" stroke="none"/><path d="M50 34L33 54H17M50 34L67 54H83M50 34V63M50 63L25 83H75Z" fill="none" stroke="currentColor" stroke-width="6.25" stroke-linecap="round" stroke-linejoin="round"/>');
 		const tabs = container.createDiv({ cls: "pomodoro-view__session-tabs", attr: { role: "group", "aria-label": this.getDisplayText() } });
+		this.sessionTabsEl = tabs;
+		this.sessionIndicatorInitialized = false;
+		tabs.createSpan({ cls: "pomodoro-view__session-indicator", attr: { "aria-hidden": "true" } });
 		for (const type of ["work", "short-break", "long-break"] as const) {
 			const button = tabs.createEl("button", { cls: "pomodoro-view__session-tab", text: type === "work" ? this.t(msg({ message: "Focus time", context: "views.pomodoroStats.metrics.focus" })) : this.getSessionTypeLabel(type) });
 			this.decorateButton(button, type === "work" ? "briefcase-business" : type === "short-break" ? "coffee" : "tasknotes-long-break");
@@ -622,6 +629,34 @@ export class PomodoroView extends ItemView {
 		button.createSpan({ cls: "pomodoro-view__button-label", text });
 	}
 
+	private updateSessionIndicator(animate = true): void {
+		const tabs = this.sessionTabsEl;
+		const button = tabs?.querySelector<HTMLElement>('[aria-pressed="true"]');
+		if (!tabs || !button) return;
+		const bounds = button.getBoundingClientRect();
+		if (!bounds.width) return;
+		const parent = tabs.getBoundingClientRect();
+		const x = `${bounds.left - parent.left}px`;
+		const y = `${bounds.top - parent.top}px`;
+		const width = `${bounds.width}px`;
+		const height = `${bounds.height}px`;
+		if (tabs.style.getPropertyValue("--pomodoro-tab-x") === x
+			&& tabs.style.getPropertyValue("--pomodoro-tab-y") === y
+			&& tabs.style.getPropertyValue("--pomodoro-tab-width") === width
+			&& tabs.style.getPropertyValue("--pomodoro-tab-height") === height) return;
+		const snap = !animate || !this.sessionIndicatorInitialized;
+		if (snap) tabs.removeClass("pomodoro-view__session-tabs--animated");
+		tabs.setCssProps({
+			"--pomodoro-tab-x": x, "--pomodoro-tab-y": y,
+			"--pomodoro-tab-width": width, "--pomodoro-tab-height": height,
+		});
+		if (snap) {
+			tabs.querySelector(".pomodoro-view__session-indicator")?.getBoundingClientRect();
+			tabs.addClass("pomodoro-view__session-tabs--animated");
+		}
+		this.sessionIndicatorInitialized = true;
+	}
+
 	private async switchSessionType(type: PomodoroSession["type"]): Promise<void> {
 		if (this.isSwitchingSession || this.isClosed) return;
 		const service = this.plugin.pomodoroService;
@@ -687,6 +722,7 @@ export class PomodoroView extends ItemView {
 				this.resizeTimeout = null;
 				this.handleVisibilityChange();
 				this.updateResponsiveLayout();
+				this.updateSessionIndicator(false);
 			}, 150);
 		};
 		if (win.ResizeObserver) {
@@ -725,6 +761,8 @@ export class PomodoroView extends ItemView {
 		);
 
 		if (containerWidth <= 0 || containerHeight <= 0) return;
+		pomodoroContainer.classList.toggle("pomodoro-view--short", containerHeight < 600);
+		pomodoroContainer.classList.toggle("pomodoro-view--very-short", containerHeight < 400);
 		if (
 			this.lastLayoutSize?.width === containerWidth &&
 			this.lastLayoutSize.height === containerHeight
@@ -759,6 +797,7 @@ export class PomodoroView extends ItemView {
 
 		// Update progress circle size based on available space
 		this.updateProgressCircleSize(containerWidth, containerHeight);
+		this.updateSessionIndicator(false);
 	}
 
 	private updateProgressCircleSize(containerWidth: number, containerHeight: number): void {
@@ -1194,6 +1233,7 @@ export class PomodoroView extends ItemView {
 			button.setAttribute("aria-pressed", String(type === selectedType));
 			button.disabled = this.isSwitchingSession || state.isRunning;
 		}
+		this.updateSessionIndicator();
 		if (this.stopButton) {
 			this.stopButton.removeClass("pomodoro-view__stop-button--hidden");
 			const settings = this.plugin.settings;

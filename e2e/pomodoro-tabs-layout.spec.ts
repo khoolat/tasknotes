@@ -74,3 +74,61 @@ test('tabs remain usable and aligned with a paused session and selected task', a
     await expect(root.locator('.pomodoro-view__timer-display')).toHaveText('16:00');
   }
 });
+
+test('segment labels stay still while the selection surface slides', async () => {
+  const page = app.page;
+  await page.evaluate(async () => {
+    const plugin = (window as any).app.plugins.plugins.tasknotes;
+    await plugin.pomodoroService.stopPomodoro();
+    await plugin.activatePomodoroView();
+    const view = (window as any).app.workspace.getLeavesOfType('tasknotes-pomodoro-view')[0].view;
+    await view.restoreLastSelectedTask();
+    await view.selectTask(null);
+  });
+  const root = page.locator('.pomodoro-view').last();
+  const tabs = root.locator('.pomodoro-view__session-tab');
+  const geometry = () => tabs.evaluateAll(elements => elements.map(el => {
+    const rect = el.getBoundingClientRect();
+    const text = el.querySelector('.pomodoro-view__button-label')!.getBoundingClientRect();
+    return { x: rect.x, width: rect.width, textX: text.x };
+  }));
+  const before = await geometry();
+  await tabs.nth(1).click();
+  await expect(tabs.nth(1)).toHaveAttribute('aria-pressed', 'true');
+  const after = await geometry();
+  for (let i = 0; i < before.length; i++) {
+    expect.soft(after[i].x).toBeCloseTo(before[i].x, 1);
+    expect.soft(after[i].width).toBeCloseTo(before[i].width, 1);
+    expect.soft(after[i].textX).toBeCloseTo(before[i].textX, 1);
+  }
+  const indicator = root.locator('.pomodoro-view__session-indicator');
+  await expect(indicator).toHaveCount(1);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await tabs.nth(2).click();
+  await expect(tabs.nth(2)).toHaveAttribute('aria-pressed', 'true');
+  expect(await indicator.evaluate(el => getComputedStyle(el).transitionDuration)).toContain('0.24s');
+  await expect.poll(() => indicator.evaluate(el => el.getAnimations().length)).toBeGreaterThan(0);
+  await page.waitForTimeout(280);
+  const selected = (await tabs.nth(2).boundingBox())!;
+  const surface = (await indicator.boundingBox())!;
+  expect(surface.x).toBeCloseTo(selected.x, 0);
+  expect(surface.width).toBeCloseTo(selected.width, 0);
+  for (const theme of ['theme-light', 'theme-dark']) {
+    await page.evaluate(theme => {
+      document.body.classList.remove('theme-light', 'theme-dark');
+      document.body.classList.add(theme);
+    }, theme);
+    await tabs.first().hover();
+    if (theme === 'theme-light') {
+      expect(await root.locator('.pomodoro-view__session-tabs').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(246, 246, 246)');
+      expect(await tabs.first().evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0.04)');
+      await tabs.nth(2).hover();
+      expect(await tabs.nth(2).evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0.02)');
+    }
+    await page.screenshot({ path: `test-results/pomodoro-segment-${theme}.png` });
+  }
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await tabs.first().click();
+  expect(await indicator.evaluate(el => getComputedStyle(el).transitionDuration)).toBe('0s');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+});

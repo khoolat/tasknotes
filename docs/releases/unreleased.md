@@ -35,6 +35,10 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 
 ## Changed
 
+- The Pomodoro timer adapts to the width and height of its pane. Narrow panes stack mode labels and controls, while short panes reduce spacing and timer size; all actions remain accessible by scrolling.
+
+- Pomodoro mode labels keep a consistent weight and width to prevent layout shifts. A subtle selection surface slides between modes, with a theme-secondary tray, 4% hover on unselected modes and 2% on the selected mode in light mode, and reduced-motion support.
+
 - Redesigned the Pomodoro timer with theme-aware typography, session tabs, Lucide controls and a flat statistics button. Pause and Resume keep the same width; the countdown updates without animation.
 
 - The second Pomodoro statistics card now shows completed, non-archived tasks that were associated with a work session. Each task is counted once by its completion date for Today, Week or All time, even when the Pomodoro session happened earlier.
