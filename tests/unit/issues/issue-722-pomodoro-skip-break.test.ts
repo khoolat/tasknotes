@@ -106,3 +106,34 @@ describe("Issue #722: skipping a prepared break", () => {
 		expect(plugin.emitter.trigger).not.toHaveBeenCalled();
 	});
 });
+
+
+describe("Selecting a prepared Pomodoro session", () => {
+	it.each([
+		["work", 25 * 60],
+		["short-break", 5 * 60],
+		["long-break", 15 * 60],
+	] as const)("prepares %s without starting time tracking", async (type, seconds) => {
+		const plugin = createMockPlugin();
+		const service = new PomodoroService(plugin as unknown as PomodoroPlugin);
+		setPomodoroState(service, { isRunning: false, timeRemaining: 60 });
+		await service.prepareSession(type);
+		expect(service.getState()).toMatchObject({ isRunning: false, nextSessionType: type, timeRemaining: seconds });
+		expect(plugin.taskService.startTimeTracking).not.toHaveBeenCalled();
+		expect(plugin.emitter.trigger).toHaveBeenCalledWith(EVENT_POMODORO_TICK, { timeRemaining: seconds, session: undefined });
+		expect(plugin.saveData).toHaveBeenCalled();
+	});
+
+	it.each([true, false])("preserves an active or paused session (running=%s)", async (isRunning) => {
+		const plugin = createMockPlugin();
+		const service = new PomodoroService(plugin as unknown as PomodoroPlugin);
+		const state: PomodoroState = {
+			isRunning, timeRemaining: 123,
+			currentSession: { id: "preserve", type: "work", startTime: new Date().toISOString(), plannedDuration: 25, completed: false },
+		};
+		setPomodoroState(service, state);
+		await service.prepareSession("long-break");
+		expect(service.getState()).toEqual(state);
+		expect(plugin.saveData).not.toHaveBeenCalled();
+	});
+});

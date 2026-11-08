@@ -20,7 +20,7 @@ describe("Issue #1957: Pomodoro vertical split layout", () => {
 		const rootBlock = extractCssBlock(css, ".tasknotes-plugin.pomodoro-view");
 		const timerSectionBlock = extractCssBlock(
 			css,
-			".tasknotes-plugin.pomodoro-view > .pomodoro-view__timer-section"
+			".tasknotes-plugin.pomodoro-view > .pomodoro-view__session-tabs"
 		);
 		const statsSectionBlock = extractCssBlock(
 			css,
@@ -29,7 +29,7 @@ describe("Issue #1957: Pomodoro vertical split layout", () => {
 
 		expect(rootBlock).toContain("justify-content: flex-start;");
 		expect(rootBlock).not.toContain("justify-content: center;");
-		expect(timerSectionBlock).toContain("margin-top: auto;");
+		expect(timerSectionBlock).toContain("margin-top: 0;");
 		expect(statsSectionBlock).toContain("margin-bottom: auto;");
 	});
 });

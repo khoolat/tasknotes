@@ -1,7 +1,7 @@
 import { uiNumber, uiDuration } from "../i18n/formatters";
 import type { MessageDescriptor } from "@lingui/core";
 import { msg } from "@lingui/core/macro";
-import { ItemView, WorkspaceLeaf, Notice, EventRef, setTooltip } from "obsidian";
+import { ItemView, WorkspaceLeaf, Notice, EventRef, setTooltip, setIcon, addIcon } from "obsidian";
 import TaskNotesPlugin from "../main";
 import {
 	POMODORO_VIEW_TYPE,
@@ -14,7 +14,7 @@ import {
 	PomodoroState,
 	TaskInfo,
 } from "../types";
-import { openTaskSelector } from "../modals/TaskSelectorWithCreateModal";
+import { TaskSelectorWithCreateModal } from "../modals/TaskSelectorWithCreateModal";
 import { createTaskCard } from "../ui/TaskCard";
 import { convertInternalToUserProperties } from "../utils/propertyMapping";
 import { getTaskWithInstanceStatus, isTaskInstanceCompleted } from "../utils/taskInstanceStatus";
@@ -68,6 +68,8 @@ export class PomodoroView extends ItemView {
 	plugin: TaskNotesPlugin;
 
 	// UI elements
+	private isSwitchingSession = false;
+	private sessionButtons = new Map<PomodoroSession["type"], HTMLButtonElement>();
 	private timerDisplay: HTMLElement | null = null;
 	private timerInput: HTMLInputElement | null = null;
 	private statusDisplay: HTMLElement | null = null;
@@ -88,6 +90,7 @@ export class PomodoroView extends ItemView {
 	private skipBreakButton: HTMLButtonElement | null = null;
 	private isEditingTimer = false;
 	private isTaskSelectorOpen = false;
+	private taskSelectorModal: TaskSelectorWithCreateModal | null = null;
 	private todaysPomodoros = 0;
 
 	// Cache stat elements to avoid innerHTML
@@ -260,6 +263,10 @@ export class PomodoroView extends ItemView {
 
 	async onClose() {
 		this.isClosed = true;
+		const selector = this.taskSelectorModal;
+		this.taskSelectorModal = null;
+		this.isTaskSelectorOpen = false;
+		selector?.close();
 		this.openGeneration++;
 		this.wasVisible = false;
 		this.displayStateKey = null;
@@ -318,6 +325,15 @@ export class PomodoroView extends ItemView {
 
 	async render() {
 		const container = this.contentEl.createDiv({ cls: "tasknotes-plugin pomodoro-view" });
+		this.sessionButtons.clear();
+		addIcon("tasknotes-long-break", '<circle cx="50" cy="15" r="6" fill="currentColor" stroke="none"/><path d="M50 34L33 54H17M50 34L67 54H83M50 34V63M50 63L25 83H75Z" fill="none" stroke="currentColor" stroke-width="6.25" stroke-linecap="round" stroke-linejoin="round"/>');
+		const tabs = container.createDiv({ cls: "pomodoro-view__session-tabs", attr: { role: "group", "aria-label": this.getDisplayText() } });
+		for (const type of ["work", "short-break", "long-break"] as const) {
+			const button = tabs.createEl("button", { cls: "pomodoro-view__session-tab", text: type === "work" ? this.t(msg({ message: "Focus time", context: "views.pomodoroStats.metrics.focus" })) : this.getSessionTypeLabel(type) });
+			this.decorateButton(button, type === "work" ? "briefcase-business" : type === "short-break" ? "coffee" : "tasknotes-long-break");
+			this.sessionButtons.set(type, button);
+			this.registerDomEvent(button, "click", () => { void this.switchSessionType(type); });
+		}
 
 		// Timer display with progress circle
 		const timerSection = container.createDiv({ cls: "pomodoro-view__timer-section" });
@@ -453,7 +469,7 @@ export class PomodoroView extends ItemView {
 		});
 
 		this.startButton = primaryControls.createEl("button", {
-			text: this.t(msg({ message: "Start focus", context: "views.pomodoro.buttons.startFocus" })),
+			text: this.t(msg({ message: "Start", context: "views.pomodoro.buttons.start" })),
 			cls: "pomodoro-view__start-button",
 		});
 
@@ -494,10 +510,24 @@ export class PomodoroView extends ItemView {
 			text: this.t(msg({ message: "completed today", context: "views.pomodoro.statsLabel" })),
 		});
 
-		// Make the stat clickable to open stats view
-		this.registerDomEvent(pomodoroStat, "click", () => {
-			void this.plugin.activatePomodoroStatsView();
-		});
+
+		// Arrange service-backed controls in the flat timer layout.
+		this.decorateButton(this.taskSelectButton, "square-plus");
+		this.progressContainer.prepend(this.subtractTimeButton);
+		this.progressContainer.append(this.addTimeButton);
+		const actions = primaryControls.createDiv({ cls: "pomodoro-view__primary-action" });
+		const widthLabel = actions.createSpan({ cls: "pomodoro-view__primary-width", text: this.t(msg({ message: "Resume", context: "views.pomodoro.buttons.resume" })), attr: { "aria-hidden": "true" } });
+		this.decorateButton(widthLabel, "play");
+		actions.append(this.startButton, this.pauseButton);
+		primaryControls.prepend(this.stopButton);
+		primaryControls.append(this.skipBreakButton);
+		controlSection.append(taskSelectorSection, this.taskDisplay);
+		const statsButton = statsSection.createEl("button", { cls: "pomodoro-view__stats-button", attr: { "aria-label": this.plugin.i18n.translate(msg({ message: "Pomodoro stats", context: "views.pomodoroStats.title" })) } });
+		const statsIcon = statsButton.createSpan({ cls: "pomodoro-view__icon", attr: { "data-icon": "chart-column" } });
+		setIcon(statsIcon, "chart-column");
+		statsButton.append(this.statsDisplay);
+		pomodoroStat.removeClass("pomodoro-view__stat--clickable");
+		this.registerDomEvent(statsButton, "click", () => { void this.plugin.activatePomodoroStatsView(); });
 
 		// Add event listeners
 		this.registerDomEvent(this.startButton, "click", async () => {
@@ -530,23 +560,9 @@ export class PomodoroView extends ItemView {
 			void this.plugin.pomodoroService.pausePomodoro();
 		});
 
-		this.registerDomEvent(this.stopButton, "click", () => {
-			void this.plugin.pomodoroService.stopPomodoro();
-		});
+		this.registerDomEvent(this.stopButton, "click", () => { void this.resetSession(); });
 
-		this.registerDomEvent(this.skipBreakButton, "click", () => {
-			const state = this.plugin.pomodoroService.getState();
-			if (state.currentSession) {
-				// Currently in a break session, stop it
-				void this.plugin.pomodoroService.stopPomodoro();
-			} else if (
-				state.nextSessionType === "short-break" ||
-				state.nextSessionType === "long-break"
-			) {
-				// Break is prepared but user wants to skip, clear the break and prepare work
-				void this.plugin.pomodoroService.skipBreak();
-			}
-		});
+		this.registerDomEvent(this.skipBreakButton, "click", () => { void this.skipSession(); });
 
 		this.registerDomEvent(this.addTimeButton, "click", () => {
 			this.adjustSessionTime(60);
@@ -595,6 +611,56 @@ export class PomodoroView extends ItemView {
 		// Initial display update
 		this.updateDisplay();
 		this.refreshStats();
+	}
+
+	private decorateButton(button: HTMLElement, icon: string): void {
+		const text = button.textContent || "";
+		if (button.tagName === "BUTTON") button.setAttribute("aria-label", text);
+		button.empty();
+		const iconEl = button.createSpan({ cls: "pomodoro-view__icon", attr: { "data-icon": icon, "aria-hidden": "true" } });
+		setIcon(iconEl, icon);
+		button.createSpan({ cls: "pomodoro-view__button-label", text });
+	}
+
+	private async switchSessionType(type: PomodoroSession["type"]): Promise<void> {
+		if (this.isSwitchingSession || this.isClosed) return;
+		const service = this.plugin.pomodoroService;
+		const state = service.getState();
+		if (state.isRunning || (state.currentSession?.type ?? state.nextSessionType ?? "work") === type) return;
+		this.isSwitchingSession = true;
+		for (const button of this.sessionButtons.values()) button.disabled = true;
+		try {
+			// Preserve elapsed work when switching away from a paused session.
+			if (state.currentSession) await service.stopPomodoro();
+			await service.prepareSession(type);
+		} catch (error) {
+			tasknotesLogger.error("Failed to switch Pomodoro session type", {
+				category: "persistence",
+				operation: "switch-session-type",
+				error,
+			});
+		} finally {
+			this.isSwitchingSession = false;
+			this.displayStateKey = null;
+			this.updateDisplay();
+		}
+	}
+
+	private async resetSession(): Promise<void> {
+		const service = this.plugin.pomodoroService;
+		const state = service.getState();
+		const type = state.currentSession?.type ?? state.nextSessionType ?? "work";
+		await service.stopPomodoro();
+		await service.prepareSession(type);
+	}
+
+	private async skipSession(): Promise<void> {
+		const service = this.plugin.pomodoroService;
+		const state = service.getState();
+		const type = state.currentSession?.type ?? state.nextSessionType ?? "work";
+		if (state.currentSession) await service.stopPomodoro();
+		if (type === "work") await service.prepareSession("short-break");
+		else await service.prepareSession("work");
 	}
 
 	private setupResizeHandling(): void {
@@ -696,6 +762,7 @@ export class PomodoroView extends ItemView {
 	}
 
 	private updateProgressCircleSize(containerWidth: number, containerHeight: number): void {
+		if (this.sessionButtons.size > 0) return;
 		if (!this.progressContainer) return;
 
 		const svg = this.progressContainer.querySelector(
@@ -770,7 +837,9 @@ export class PomodoroView extends ItemView {
 
 	private async openTaskSelector() {
 		if (this.isTaskSelectorOpen) {
-			return;
+			if (this.taskSelectorModal?.modalEl.isConnected) return;
+			// A dismissed/detached picker must not permanently block this view.
+			this.isTaskSelectorOpen = false;
 		}
 
 		this.isTaskSelectorOpen = true;
@@ -785,18 +854,25 @@ export class PomodoroView extends ItemView {
 				return;
 			}
 
-			// Open task selector modal
-			openTaskSelector(
-				this.plugin,
-				unarchivedTasks,
-				(selectedTask) => {
+			const modal = new TaskSelectorWithCreateModal(this.plugin.app, this.plugin, unarchivedTasks, {
+				targetDate,
+				onResult: (result) => {
+					// Ignore callbacks from a picker belonging to an earlier view lifecycle.
+					if (this.taskSelectorModal !== modal) return;
+					this.taskSelectorModal = null;
 					this.isTaskSelectorOpen = false;
-					void this.selectTask(selectedTask);
+					if (result.type === "selected" || result.type === "created") {
+						void this.selectTask(result.task);
+					}
 				},
-				{ targetDate }
-			);
+			});
+			this.taskSelectorModal = modal;
+			modal.open();
 		} catch (error) {
+			const selector = this.taskSelectorModal;
+			this.taskSelectorModal = null;
 			this.isTaskSelectorOpen = false;
+			selector?.close();
 			tasknotesLogger.error("Error opening task selector:", {
 				category: "persistence",
 				operation: "opening-task-selector",
@@ -824,6 +900,7 @@ export class PomodoroView extends ItemView {
 			return;
 		}
 		if (!this.taskCardContainer) return;
+		this.contentEl.querySelector(".pomodoro-view")?.classList.toggle("pomodoro-view--has-task", Boolean(task));
 		this.taskCardDirty = false;
 		// Update button text - keep it simple since we have the task card
 		if (this.taskSelectButton) {
@@ -842,6 +919,8 @@ export class PomodoroView extends ItemView {
 				this.taskSelectButton.addClass("pomodoro-view__task-select-button--no-task");
 			}
 		}
+
+		if (this.taskSelectButton) this.decorateButton(this.taskSelectButton, "square-plus");
 
 		// Update clear button visibility
 		if (this.taskClearButton) {
@@ -982,6 +1061,7 @@ export class PomodoroView extends ItemView {
 			state.currentSession?.type,
 			state.currentSession?.taskPath,
 			state.nextSessionType,
+			!state.currentSession ? state.timeRemaining : undefined,
 		]);
 		if (stateKey === this.displayStateKey) return;
 		this.displayStateKey = stateKey;
@@ -1057,13 +1137,15 @@ export class PomodoroView extends ItemView {
 				// Idle - no active session
 				this.startButton.removeClass("pomodoro-view__start-button--hidden");
 
-				// Set button text based on next session type
+				this.startButton.textContent = this.t(msg({ message: "Start", context: "views.pomodoro.buttons.start" }));
+
+				// Set button tooltip based on next session type
 				if (state.nextSessionType === "short-break") {
-					this.startButton.textContent = this.t(msg({ message: "Start short break", context: "views.pomodoro.buttons.startShortBreak" }));
+					setTooltip(this.startButton, this.t(msg({ message: "Start short break", context: "views.pomodoro.buttons.startShortBreak" })));
 				} else if (state.nextSessionType === "long-break") {
-					this.startButton.textContent = this.t(msg({ message: "Start long break", context: "views.pomodoro.buttons.startLongBreak" }));
+					setTooltip(this.startButton, this.t(msg({ message: "Start long break", context: "views.pomodoro.buttons.startLongBreak" })));
 				} else {
-					this.startButton.textContent = this.t(msg({ message: "Start focus", context: "views.pomodoro.buttons.startFocus" }));
+					setTooltip(this.startButton, this.t(msg({ message: "Start focus", context: "views.pomodoro.buttons.startFocus" })));
 				}
 
 				this.pauseButton.addClass("pomodoro-view__pause-button--hidden");
@@ -1107,6 +1189,29 @@ export class PomodoroView extends ItemView {
 				this.timerDisplay.setAttribute("aria-disabled", "true");
 			}
 		}
+		const selectedType = state.currentSession?.type ?? state.nextSessionType ?? "work";
+		for (const [type, button] of this.sessionButtons) {
+			button.setAttribute("aria-pressed", String(type === selectedType));
+			button.disabled = this.isSwitchingSession || state.isRunning;
+		}
+		if (this.stopButton) {
+			this.stopButton.removeClass("pomodoro-view__stop-button--hidden");
+			const settings = this.plugin.settings;
+			const defaultMinutes = selectedType === "work" ? settings.pomodoroWorkDuration : selectedType === "short-break" ? settings.pomodoroShortBreakDuration : settings.pomodoroLongBreakDuration;
+			this.stopButton.disabled = !state.currentSession && state.timeRemaining === defaultMinutes * 60;
+			this.decorateButton(this.stopButton, "rotate-ccw");
+			setTooltip(this.stopButton, this.t(msg({ message: "Reset", context: "settings.integrations.basesIntegration.viewCommands.resetButton" })));
+		}
+		if (this.skipBreakButton) {
+			this.skipBreakButton.removeClass("pomodoro-view__skip-break-button--hidden");
+			this.decorateButton(this.skipBreakButton, "skip-forward");
+			setTooltip(this.skipBreakButton, this.t(msg({ message: "Next", context: "views.basesCalendar.hints.next" })));
+		}
+		if (this.startButton) this.decorateButton(this.startButton, "play");
+		if (this.pauseButton) this.decorateButton(this.pauseButton, "pause");
+		if (this.addTimeButton) this.decorateButton(this.addTimeButton, "plus");
+		if (this.subtractTimeButton) this.decorateButton(this.subtractTimeButton, "minus");
+
 	}
 
 	private updateSessionMeta(state: PomodoroState, nowMs = Date.now()): void {

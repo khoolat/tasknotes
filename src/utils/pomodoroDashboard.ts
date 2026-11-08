@@ -1,9 +1,31 @@
-import type { PomodoroSessionHistory } from "../types";
+import type { PomodoroSessionHistory, TaskInfo } from "../types";
 import { formatDateForStorage } from "./dateUtils";
 import { getPomodoroSessionDateKey, getPomodoroSessionTaskPaths } from "./pomodoroStats";
 import { getSessionDuration } from "./pomodoroUtils";
 
 export type PomodoroStatsPeriod = "today" | "week" | "all";
+
+export function countCompletedPomodoroDashboardTasks(
+	tasks: readonly TaskInfo[],
+	history: readonly PomodoroSessionHistory[],
+	completedStatuses: ReadonlySet<string>,
+	period: PomodoroStatsPeriod,
+	today: Date,
+	firstDay: number
+): number {
+	const range = getPomodoroPeriodRange(period, today, firstDay);
+	const associatedPaths = new Set(history
+		.filter((session) => session.type === "work")
+		.flatMap(getPomodoroSessionTaskPaths));
+	const paths = new Set<string>();
+	for (const task of tasks) {
+		if (task.archived || !completedStatuses.has(task.status) || !associatedPaths.has(task.path)) continue;
+		const day = task.completedDate?.slice(0, 10);
+		if (range && (!day || day < range.start || day > range.end)) continue;
+		paths.add(task.path);
+	}
+	return paths.size;
+}
 
 export interface PomodoroDashboardSummary {
 	sessions: PomodoroSessionHistory[];

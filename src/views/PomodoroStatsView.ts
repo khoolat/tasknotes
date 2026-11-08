@@ -5,14 +5,14 @@ import { msg } from "@lingui/core/macro";
 import { ItemView, Menu, Notice, WorkspaceLeaf, setIcon, setTooltip } from "obsidian";
 import TaskNotesPlugin from "../main";
 import {
-	POMODORO_STATS_VIEW_TYPE, PomodoroSessionHistory,
+	POMODORO_STATS_VIEW_TYPE, PomodoroSessionHistory, TaskInfo,
 	EVENT_POMODORO_COMPLETE, EVENT_POMODORO_INTERRUPT, EVENT_TASK_UPDATED,
 } from "../types";
 import { showConfirmationModal } from "../modals/ConfirmationModal";
 import { getTodayLocal, createUTCDateFromLocalCalendarDate } from "../utils/dateUtils";
 import { getSessionDuration } from "../utils/pomodoroUtils";
 import { getPomodoroSessionTaskPaths, sortPomodoroSessions } from "../utils/pomodoroStats";
-import { formatPomodoroHistoryDate, getPomodoroDashboardSummary, PomodoroStatsPeriod } from "../utils/pomodoroDashboard";
+import { countCompletedPomodoroDashboardTasks, formatPomodoroHistoryDate, getPomodoroDashboardSummary, PomodoroStatsPeriod } from "../utils/pomodoroDashboard";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Views/PomodoroStatsView" });
@@ -176,14 +176,23 @@ export class PomodoroStatsView extends ItemView {
 		try {
 			if (!this.plugin.pomodoroService || !this.metricsEl || !this.recentSessionsEl) return;
 			const today = createUTCDateFromLocalCalendarDate(getTodayLocal());
-			const history = await this.plugin.pomodoroService.getSessionHistory();
+			const [history, tasks] = await Promise.all([
+				this.plugin.pomodoroService.getSessionHistory(),
+				Promise.all([...this.plugin.cacheManager.getAllTaskPaths()].map((path) => this.plugin.cacheManager.getTaskInfo(path))),
+			]);
 			if (version !== this.refreshVersion) return;
-			const { sessions, focusMinutes, taskCount, completedSessions, dayStreak } = getPomodoroDashboardSummary(
+			const { sessions, focusMinutes, completedSessions, dayStreak } = getPomodoroDashboardSummary(
 				history, this.period, today, this.plugin.settings.calendarViewSettings.firstDay
+			);
+			const completedTasks = countCompletedPomodoroDashboardTasks(
+				tasks.filter((task): task is TaskInfo => Boolean(task)),
+				history,
+				new Set(this.plugin.statusManager.getCompletedStatuses()),
+				this.period, today, this.plugin.settings.calendarViewSettings.firstDay
 			);
 			this.metricsEl.empty();
 			this.renderMetric(msg({ message: "Focus time", context: "views.pomodoroStats.metrics.focus" }), focusMinutes ? uiDuration(focusMinutes) : this.t(msg({ message: "No sessions", context: "views.pomodoroStats.empty.focus" })), "hourglass");
-			this.renderMetric(msg({ message: "Tasks worked on", context: "views.pomodoroStats.metrics.tasks" }), taskCount ? uiNumber(taskCount) : this.t(msg({ message: "No tasks", context: "views.kanban.noTasks" })), "list-checks");
+			this.renderMetric(msg({ message: "Completed tasks", context: "views.pomodoroStats.metrics.tasks" }), completedTasks ? uiNumber(completedTasks) : this.t(msg({ message: "No tasks", context: "views.kanban.noTasks" })), "list-checks");
 			this.renderMetric(msg({ message: "Completed sessions", context: "views.pomodoroStats.metrics.sessions" }), completedSessions ? uiNumber(completedSessions) : this.t(msg({ message: "No completed sessions", context: "views.pomodoroStats.empty.sessions" })), "timer");
 			this.renderMetric(msg({ message: "Days in a row", context: "views.pomodoroStats.metrics.days" }), dayStreak ? uiNumber(dayStreak, { style: "unit", unit: "day", unitDisplay: "long" }) : this.t(msg({ message: "No streak", context: "views.pomodoroStats.empty.days" })), "zap");
 			this.renderRecentSessions(this.recentSessionsEl, sessions);

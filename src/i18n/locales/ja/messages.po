@@ -3175,6 +3175,11 @@ msgctxt "views.pomodoroStats.metrics.sessions"
 msgid "Completed sessions"
 msgstr "完了したセッション"
 
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.metrics.tasks"
+msgid "Completed tasks"
+msgstr "完了したタスク"
+
 #: src/views/PomodoroView.ts
 msgctxt "views.pomodoro.statsLabel"
 msgid "completed today"
@@ -6658,6 +6663,7 @@ msgid "Focus time"
 msgstr "集中時間"
 
 #: src/views/PomodoroStatsView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.pomodoroStats.metrics.focus"
 msgid "Focus time"
 msgstr "集中時間"
@@ -8227,6 +8233,7 @@ msgid "New Task"
 msgstr "新しいタスク"
 
 #: src/bases/CalendarView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.basesCalendar.hints.next"
 msgid "Next"
 msgstr "次へ"
@@ -9717,6 +9724,7 @@ msgid "Pomodoro statistics base"
 msgstr "ポモドーロ統計の Bases ビュー"
 
 #: src/views/PomodoroStatsView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.pomodoroStats.title"
 msgid "Pomodoro stats"
 msgstr "ポモドーロ統計"
@@ -10450,6 +10458,7 @@ msgid "Rescheduling will clear these recorded completed/skipped instances on or 
 msgstr "予定を変更すると、新しい日付以降に完了またはスキップした記録（{dates}）が消去されます。これらの回は未完了・未スキップに戻ります。続行しますか？"
 
 #: src/settings/tabs/generalTab.ts
+#: src/views/PomodoroView.ts
 msgctxt "settings.integrations.basesIntegration.viewCommands.resetButton"
 msgid "Reset"
 msgstr "リセット"
@@ -11395,6 +11404,11 @@ msgstr "予定日から期限日までタスクを表示"
 msgctxt "settings.modalFields.splitLayout.name"
 msgid "Split layout on wide screens"
 msgstr "ワイド画面で分割レイアウト"
+
+#: src/views/PomodoroView.ts
+msgctxt "views.pomodoro.buttons.start"
+msgid "Start"
+msgstr "開始"
 
 #: src/components/RecurrenceContextMenu.ts
 msgctxt "components.recurrenceContextMenu.customRecurrenceModal.startDate"
@@ -12425,11 +12439,6 @@ msgstr "タスクが正常にエクスポートされました"
 msgctxt "notices.interface.postponed"
 msgid "Tasks postponed: {count}. Failed: {failed}."
 msgstr "延期したタスク：{count}件。失敗：{failed}件。"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.metrics.tasks"
-msgid "Tasks worked on"
-msgstr "取り組んだタスク"
 
 #: src/settings/tabs/integrationsTab.ts
 msgctxt "settings.integrations.calendarSubscriptions.customTemplate.description"

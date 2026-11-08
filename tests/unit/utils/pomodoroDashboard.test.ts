@@ -1,9 +1,42 @@
-import { formatPomodoroHistoryDate, getPomodoroDashboardSummary, getPomodoroDayStreak, getPomodoroPeriodRange } from "../../../src/utils/pomodoroDashboard";
-import type { PomodoroSessionHistory } from "../../../src/types";
+import { countCompletedPomodoroDashboardTasks, formatPomodoroHistoryDate, getPomodoroDashboardSummary, getPomodoroDayStreak, getPomodoroPeriodRange } from "../../../src/utils/pomodoroDashboard";
+import type { PomodoroSessionHistory, TaskInfo } from "../../../src/types";
 
 function session(day: string, completed = true, type: PomodoroSessionHistory["type"] = "work"): PomodoroSessionHistory {
 	return { id: day, startTime: `${day}T09:00:00+10:00`, endTime: `${day}T09:25:00+10:00`, plannedDuration: 25, type, completed, activePeriods: [] };
 }
+
+describe("completed tasks in the Pomodoro dashboard", () => {
+	const today = new Date("2026-11-07T00:00:00Z");
+	const statuses = new Set(["done", "finished"]);
+	const task = (path: string, status: string, completedDate?: string, archived = false): TaskInfo => ({ path, title: path, status, completedDate, archived, priority: "normal" });
+
+	it("counts later task completions from past work sessions, excluding unrelated, open and archived tasks", () => {
+		const completed = task("today.md", "done", "2026-11-07");
+		const tasks = [completed, completed,
+			task("custom-status.md", "finished", "2026-11-07T12:30:00+03:00"),
+			task("yesterday.md", "done", "2026-11-06"),
+			task("old.md", "done", "2026-10-01"),
+			task("undated.md", "done"),
+			task("open.md", "open", "2026-11-07"),
+			task("archived.md", "done", "2026-11-07", true),
+		];
+		const history = tasks.map((task) => ({ ...session("2026-09-01", false), taskPath: task.path }));
+		tasks.push(task("unrelated.md", "done", "2026-11-07"), task("break-only.md", "done", "2026-11-07"));
+		history.push({ ...session("2026-11-07", true, "short-break"), taskPath: "break-only.md" });
+		expect(countCompletedPomodoroDashboardTasks(tasks, history, statuses, "today", today, 1)).toBe(2);
+		expect(countCompletedPomodoroDashboardTasks(tasks, history, statuses, "week", today, 1)).toBe(3);
+		expect(countCompletedPomodoroDashboardTasks(tasks, history, statuses, "all", today, 1)).toBe(5);
+	});
+
+	it("honors inclusive calendar-week boundaries and returns zero for empty inputs", () => {
+		const tasks = [task("start.md", "done", "2026-11-02"), task("end.md", "done", "2026-11-08"), task("next.md", "done", "2026-11-09")];
+		const history = [{ ...session("2026-10-01"), taskPaths: tasks.map((task) => task.path) }];
+		expect(countCompletedPomodoroDashboardTasks(tasks, history, statuses, "week", today, 1)).toBe(2);
+		expect(countCompletedPomodoroDashboardTasks(tasks, history, new Set(), "week", today, 1)).toBe(0);
+		expect(countCompletedPomodoroDashboardTasks([], history, statuses, "all", today, 1)).toBe(0);
+		expect(countCompletedPomodoroDashboardTasks(tasks, [], statuses, "all", today, 1)).toBe(0);
+	});
+});
 
 describe("Pomodoro dashboard summary", () => {
 	const today = new Date("2026-11-07T00:00:00Z");

@@ -3175,6 +3175,11 @@ msgctxt "views.pomodoroStats.metrics.sessions"
 msgid "Completed sessions"
 msgstr "완료한 세션"
 
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.metrics.tasks"
+msgid "Completed tasks"
+msgstr "완료한 작업"
+
 #: src/views/PomodoroView.ts
 msgctxt "views.pomodoro.statsLabel"
 msgid "completed today"
@@ -6658,6 +6663,7 @@ msgid "Focus time"
 msgstr "집중 시간"
 
 #: src/views/PomodoroStatsView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.pomodoroStats.metrics.focus"
 msgid "Focus time"
 msgstr "집중 시간"
@@ -8227,6 +8233,7 @@ msgid "New Task"
 msgstr "새 작업"
 
 #: src/bases/CalendarView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.basesCalendar.hints.next"
 msgid "Next"
 msgstr "다음"
@@ -9717,6 +9724,7 @@ msgid "Pomodoro statistics base"
 msgstr "뽀모도로 통계 베이스"
 
 #: src/views/PomodoroStatsView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.pomodoroStats.title"
 msgid "Pomodoro stats"
 msgstr "뽀모도로 통계"
@@ -10450,6 +10458,7 @@ msgid "Rescheduling will clear these recorded completed/skipped instances on or 
 msgstr "일정을 변경하면 새 날짜 당일 또는 이후에 완료되거나 건너뛴 것으로 기록된 다음 회차가 지워집니다: {dates}. 더 이상 완료 또는 건너뛰기로 표시되지 않습니다. 계속하시겠습니까?"
 
 #: src/settings/tabs/generalTab.ts
+#: src/views/PomodoroView.ts
 msgctxt "settings.integrations.basesIntegration.viewCommands.resetButton"
 msgid "Reset"
 msgstr "초기화"
@@ -11395,6 +11404,11 @@ msgstr "예정일부터 마감일까지 작업을 이어서 표시"
 msgctxt "settings.modalFields.splitLayout.name"
 msgid "Split layout on wide screens"
 msgstr "넓은 화면에서 분할 레이아웃"
+
+#: src/views/PomodoroView.ts
+msgctxt "views.pomodoro.buttons.start"
+msgid "Start"
+msgstr "시작"
 
 #: src/components/RecurrenceContextMenu.ts
 msgctxt "components.recurrenceContextMenu.customRecurrenceModal.startDate"
@@ -12425,11 +12439,6 @@ msgstr "작업이 성공적으로 내보내졌습니다"
 msgctxt "notices.interface.postponed"
 msgid "Tasks postponed: {count}. Failed: {failed}."
 msgstr "연기된 작업: {count}개. 실패: {failed}개."
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.metrics.tasks"
-msgid "Tasks worked on"
-msgstr "진행한 작업"
 
 #: src/settings/tabs/integrationsTab.ts
 msgctxt "settings.integrations.calendarSubscriptions.customTemplate.description"

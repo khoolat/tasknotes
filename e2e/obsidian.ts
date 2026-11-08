@@ -261,8 +261,9 @@ async function waitForCdpUrl(
 async function stopOwnedProcess(child?: ChildProcess): Promise<void> {
   if (!child?.pid) return;
   for (const signal of ['SIGTERM', 'SIGKILL'] as const) {
+    if (child.exitCode !== null || child.signalCode !== null) return;
     try {
-      process.kill(-child.pid, signal);
+      process.kill(process.platform === 'win32' ? child.pid : -child.pid, signal);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ESRCH') return;
       throw error;
@@ -273,7 +274,7 @@ async function stopOwnedProcess(child?: ChildProcess): Promise<void> {
 
 export async function launchObsidian(): Promise<ObsidianApp> {
   // Check that setup has been run
-  const obsidianBinary = path.join(UNPACKED_DIR, 'obsidian');
+  const obsidianBinary = process.env.TASKNOTES_E2E_OBSIDIAN_BINARY ?? path.join(UNPACKED_DIR, 'obsidian');
   if (!fs.existsSync(obsidianBinary)) {
     throw new Error(
       'Obsidian unpacked directory not found. Run `npm run e2e:setup` first.'
@@ -327,7 +328,7 @@ export async function launchObsidian(): Promise<ObsidianApp> {
         },
       };
       fs.writeFileSync(obsidianConfigPath, JSON.stringify(obsidianConfig));
-      const launchWithoutDisplay = !process.env.DISPLAY;
+      const launchWithoutDisplay = process.platform !== 'win32' && !process.env.DISPLAY;
       const obsidianArgs = [
         '--no-sandbox',
         '--password-store=basic', // Test profiles must not prompt to unlock the desktop keyring.
@@ -342,9 +343,10 @@ export async function launchObsidian(): Promise<ObsidianApp> {
         : obsidianArgs;
 
       obsidianProcess = spawn(spawnCommand, spawnArgs, {
-        cwd: UNPACKED_DIR,
+        cwd: path.dirname(obsidianBinary),
         stdio: ['ignore', 'pipe', 'pipe'],
-        detached: true, // Own the Xvfb/Electron process group so teardown cannot leak children.
+        detached: process.platform !== 'win32', // Own the Xvfb/Electron process group on Unix.
+        windowsHide: true,
         env: {
           ...process.env,
           OBSIDIAN_CONFIG_DIR: userDataDir,
@@ -421,7 +423,7 @@ export async function launchObsidian(): Promise<ObsidianApp> {
     await setObsidianViewport(page, { width: 1400, height: 900 });
 
     // Handle "Trust this vault" dialog - this enables community plugins
-    const trustButton = page.locator('button:has-text("Trust author and enable plugins")');
+    const trustButton = page.getByRole('button', { name: /Trust author and enable plugins|Довериться автору и включить плагины/ });
     if (await trustButton.isVisible({ timeout: 3000 }).catch(() => false)) {
       await trustButton.click();
       await page.waitForTimeout(2000);

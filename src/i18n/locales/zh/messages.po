@@ -3175,6 +3175,11 @@ msgctxt "views.pomodoroStats.metrics.sessions"
 msgid "Completed sessions"
 msgstr "已完成的专注"
 
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.metrics.tasks"
+msgid "Completed tasks"
+msgstr "已完成任务"
+
 #: src/views/PomodoroView.ts
 msgctxt "views.pomodoro.statsLabel"
 msgid "completed today"
@@ -6658,6 +6663,7 @@ msgid "Focus time"
 msgstr "专注时间"
 
 #: src/views/PomodoroStatsView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.pomodoroStats.metrics.focus"
 msgid "Focus time"
 msgstr "专注时间"
@@ -8227,6 +8233,7 @@ msgid "New Task"
 msgstr "新任务"
 
 #: src/bases/CalendarView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.basesCalendar.hints.next"
 msgid "Next"
 msgstr "下一个"
@@ -9717,6 +9724,7 @@ msgid "Pomodoro statistics base"
 msgstr "番茄钟统计 Base"
 
 #: src/views/PomodoroStatsView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.pomodoroStats.title"
 msgid "Pomodoro stats"
 msgstr "番茄钟统计"
@@ -10450,6 +10458,7 @@ msgid "Rescheduling will clear these recorded completed/skipped instances on or 
 msgstr "重新安排将清除新日期当天及之后记录为已完成或已跳过的以下实例：{dates}。它们将不再标记为已完成或已跳过。是否继续？"
 
 #: src/settings/tabs/generalTab.ts
+#: src/views/PomodoroView.ts
 msgctxt "settings.integrations.basesIntegration.viewCommands.resetButton"
 msgid "Reset"
 msgstr "重置"
@@ -11395,6 +11404,11 @@ msgstr "在计划日期至截止日期之间显示任务"
 msgctxt "settings.modalFields.splitLayout.name"
 msgid "Split layout on wide screens"
 msgstr "宽屏下使用分栏布局"
+
+#: src/views/PomodoroView.ts
+msgctxt "views.pomodoro.buttons.start"
+msgid "Start"
+msgstr "开始"
 
 #: src/components/RecurrenceContextMenu.ts
 msgctxt "components.recurrenceContextMenu.customRecurrenceModal.startDate"
@@ -12425,11 +12439,6 @@ msgstr "任务导出成功"
 msgctxt "notices.interface.postponed"
 msgid "Tasks postponed: {count}. Failed: {failed}."
 msgstr "已推迟任务：{count} 个。失败：{failed} 个。"
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.metrics.tasks"
-msgid "Tasks worked on"
-msgstr "处理过的任务"
 
 #: src/settings/tabs/integrationsTab.ts
 msgctxt "settings.integrations.calendarSubscriptions.customTemplate.description"

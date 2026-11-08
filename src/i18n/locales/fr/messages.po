@@ -3176,6 +3176,11 @@ msgctxt "views.pomodoroStats.metrics.sessions"
 msgid "Completed sessions"
 msgstr "Sessions terminées"
 
+#: src/views/PomodoroStatsView.ts
+msgctxt "views.pomodoroStats.metrics.tasks"
+msgid "Completed tasks"
+msgstr "Tâches terminées"
+
 #: src/views/PomodoroView.ts
 msgctxt "views.pomodoro.statsLabel"
 msgid "completed today"
@@ -6659,6 +6664,7 @@ msgid "Focus time"
 msgstr "Temps de concentration"
 
 #: src/views/PomodoroStatsView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.pomodoroStats.metrics.focus"
 msgid "Focus time"
 msgstr "Temps de concentration"
@@ -8228,6 +8234,7 @@ msgid "New Task"
 msgstr "Nouvelle tâche"
 
 #: src/bases/CalendarView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.basesCalendar.hints.next"
 msgid "Next"
 msgstr "Suivant"
@@ -9718,6 +9725,7 @@ msgid "Pomodoro statistics base"
 msgstr "Base de statistiques Pomodoro"
 
 #: src/views/PomodoroStatsView.ts
+#: src/views/PomodoroView.ts
 msgctxt "views.pomodoroStats.title"
 msgid "Pomodoro stats"
 msgstr "Statistiques Pomodoro"
@@ -10451,6 +10459,7 @@ msgid "Rescheduling will clear these recorded completed/skipped instances on or 
 msgstr "La replanification effacera ces instances enregistrées comme terminées ou ignorées à la nouvelle date ou après celle-ci : {dates}. Elles ne seront plus marquées comme terminées ou ignorées. Continuer ?"
 
 #: src/settings/tabs/generalTab.ts
+#: src/views/PomodoroView.ts
 msgctxt "settings.integrations.basesIntegration.viewCommands.resetButton"
 msgid "Reset"
 msgstr "Réinitialiser"
@@ -11396,6 +11405,11 @@ msgstr "Étendre les tâches entre la date planifiée et la date d''échéance"
 msgctxt "settings.modalFields.splitLayout.name"
 msgid "Split layout on wide screens"
 msgstr "Mise en page divisée sur grands écrans"
+
+#: src/views/PomodoroView.ts
+msgctxt "views.pomodoro.buttons.start"
+msgid "Start"
+msgstr "Démarrer"
 
 #: src/components/RecurrenceContextMenu.ts
 msgctxt "components.recurrenceContextMenu.customRecurrenceModal.startDate"
@@ -12426,11 +12440,6 @@ msgstr "Tâches exportées avec succès"
 msgctxt "notices.interface.postponed"
 msgid "Tasks postponed: {count}. Failed: {failed}."
 msgstr "Tâches reportées : {count}. Échecs : {failed}."
-
-#: src/views/PomodoroStatsView.ts
-msgctxt "views.pomodoroStats.metrics.tasks"
-msgid "Tasks worked on"
-msgstr "Tâches travaillées"
 
 #: src/settings/tabs/integrationsTab.ts
 msgctxt "settings.integrations.calendarSubscriptions.customTemplate.description"

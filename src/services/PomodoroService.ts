@@ -466,9 +466,14 @@ export class PomodoroService {
 		}
 
 		// Validate duration settings
-		const duration = isLongBreak
+		const defaultDuration = isLongBreak
 			? Math.max(1, Math.min(60, this.plugin.settings.pomodoroLongBreakDuration))
 			: Math.max(1, Math.min(30, this.plugin.settings.pomodoroShortBreakDuration));
+
+		const breakType = isLongBreak ? "long-break" : "short-break";
+		const duration = this.state.nextSessionType === breakType
+			? clampPomodoroDurationSeconds(this.state.timeRemaining) / 60
+			: defaultDuration;
 
 		const sessionStartTime = getCurrentTimestamp();
 		const session: PomodoroSession = {
@@ -1140,6 +1145,20 @@ export class PomodoroService {
 			timeRemaining: this.state.timeRemaining,
 			session: this.state.currentSession,
 		});
+	}
+
+	/** Select an idle session without starting or interrupting time tracking. */
+	async prepareSession(type: PomodoroSession["type"]): Promise<void> {
+		if (this.state.currentSession || this.state.isRunning) return;
+		this.stopTimer();
+		this.state.nextSessionType = type;
+		this.state.timeRemaining = (type === "work"
+			? this.plugin.settings.pomodoroWorkDuration
+			: type === "short-break"
+				? this.plugin.settings.pomodoroShortBreakDuration
+				: this.plugin.settings.pomodoroLongBreakDuration) * 60;
+		await this.saveState();
+		this.plugin.emitter.trigger(EVENT_POMODORO_TICK, { timeRemaining: this.state.timeRemaining, session: undefined });
 	}
 
 	public adjustPreparedTimer(newTimeInSeconds: number): void {

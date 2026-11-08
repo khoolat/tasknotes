@@ -178,7 +178,8 @@ describe("Issue #2356: economical Pomodoro rendering", () => {
 		state.currentSession = undefined;
 		state.nextSessionType = "short-break";
 		tick();
-		expect(internals.startButton.textContent).toBe("Start short break");
+		expect(internals.startButton.textContent).toBe("Start");
+		expect(internals.startButton.getAttribute("aria-label")).toBe("Start");
 	});
 
 	it("defers hidden countdowns and task cards, then catches up immediately when shown", () => {
