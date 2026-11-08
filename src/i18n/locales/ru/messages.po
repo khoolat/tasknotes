@@ -8782,7 +8782,7 @@ msgstr "Нет"
 #: src/i18n/configLabels.ts
 msgctxt "settings/defaults: defaults label"
 msgid "None"
-msgstr "Нет"
+msgstr "Бэклог"
 
 #: src/components/SubgroupMenuBuilder.ts
 msgctxt "ui.filterBar.group.none"
@@ -9084,7 +9084,7 @@ msgstr "Открыть"
 #: src/i18n/configLabels.ts
 msgctxt "settings/defaults: defaults label"
 msgid "Open"
-msgstr "Открыть"
+msgstr "Запланировано"
 
 #: src/ui/taskCardContextMenu.ts
 msgctxt "ui.audit.open"

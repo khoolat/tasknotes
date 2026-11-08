@@ -35,6 +35,7 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 
 ## Changed
 
+- Renamed the Russian default task status labels “Нет” and “Открыть” to “Бэклог” and “Запланировано”.
 - The Pomodoro timer adapts to the width and height of its pane. Narrow panes stack mode labels and controls, while short panes reduce spacing and timer size; all actions remain accessible by scrolling.
 
 - Pomodoro mode labels keep a consistent weight and width to prevent layout shifts. A subtle selection surface slides between modes, with a theme-secondary tray, 4% hover on unselected modes and 2% on the selected mode in light mode, and reduced-motion support.
